@@ -1,6 +1,25 @@
 from flask import Flask, render_template, request, redirect, url_for
-import mysql.connector
 from db_config import get_connection
+import os
+import sqlite3
+
+# 🔧 Auto-create students.db with students table if it doesn't exist
+if not os.path.exists("students.db"):
+    conn = sqlite3.connect("students.db")
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            age INTEGER,
+            grade TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+app = Flask(__name__)
+
 
 app = Flask(__name__)
 
@@ -16,7 +35,8 @@ def add_student():
         grade = request.form['grade']
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO students (name, age, grade) VALUES (%s, %s, %s)", (name, age, grade))
+     cursor.execute("INSERT INTO students (name, age, grade) VALUES (?, ?, ?)", (name, age, grade))
+
         conn.commit()
         conn.close()
         return redirect(url_for('view_students'))
@@ -39,7 +59,8 @@ def update_student(id):
         name = request.form['name']
         age = request.form['age']
         grade = request.form['grade']
-        cursor.execute("UPDATE students SET name=%s, age=%s, grade=%s WHERE id=%s", (name, age, grade, id))
+     cursor.execute("UPDATE students SET name = ?, age = ?, grade = ? WHERE id = ?", (name, age, grade, id))
+
         conn.commit()
         conn.close()
         return redirect(url_for('view_students'))
@@ -53,7 +74,8 @@ def update_student(id):
 def delete_student(id):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM students WHERE id=%s", (id,))
+   cursor.execute("DELETE FROM students WHERE id = ?", (id,))
+
     conn.commit()
     conn.close()
     return redirect(url_for('view_students'))
