@@ -27,20 +27,21 @@ app = Flask(__name__)
 def home():
     return render_template('index.html')
 
-@app.route('/add', methods=['GET', 'POST'])
+@app.route("/add", methods=["GET", "POST"])
 def add_student():
-    if request.method == 'POST':
-        name = request.form['name']
-        age = request.form['age']
-        grade = request.form['grade']
+    if request.method == "POST":
+        name = request.form["name"]
+        age = int(request.form["age"])
+        grade = request.form["grade"]
+        
         conn = get_connection()
         cursor = conn.cursor()
-     cursor.execute("INSERT INTO students (name, age, grade) VALUES (?, ?, ?)", (name, age, grade))
-
+        cursor.execute("INSERT INTO students (name, age, grade) VALUES (?, ?, ?)", (name, age, grade))
         conn.commit()
         conn.close()
-        return redirect(url_for('view_students'))
-    return render_template('add.html')
+        return redirect(url_for("view_students"))
+    return render_template("add.html")
+
 
 @app.route('/view')
 def view_students():
