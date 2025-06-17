@@ -30,9 +30,9 @@ def home():
 @app.route("/add", methods=["GET", "POST"])
 def add_student():
     if request.method == "POST":
-    name = request.form["name"]
-    age = int(request.form["age"])
-    grade = request.form["grade"]
+       name = request.form["name"]
+       age = int(request.form["age"])
+       grade = request.form["grade"]
         
     conn = get_connection()
     cursor = conn.cursor()
