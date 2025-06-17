@@ -18,6 +18,7 @@ if not os.path.exists("students.db"):
     conn.commit()
     conn.close()
 
+
 app = Flask(__name__)
 
 
@@ -30,9 +31,9 @@ def home():
 @app.route("/add", methods=["GET", "POST"])
 def add_student():
     if request.method == "POST":
-       name = request.form["name"]
-       age = int(request.form["age"])
-       grade = request.form["grade"]
+    name = request.form["name"]
+    age = int(request.form["age"])
+    grade = request.form["grade"]
         
     conn = get_connection()
     cursor = conn.cursor()
@@ -57,14 +58,14 @@ def update_student(id):
     conn = get_connection()
     cursor = conn.cursor()
     if request.method == 'POST':
-        name = request.form['name']
-        age = request.form['age']
-        grade = request.form['grade']
-     cursor.execute("UPDATE students SET name = ?, age = ?, grade = ? WHERE id = ?", (name, age, grade, id))
+    name = request.form['name']
+    age = request.form['age']
+    grade = request.form['grade']
+    cursor.execute("UPDATE students SET name = ?, age = ?, grade = ? WHERE id = ?", (name, age, grade, id))
 
-        conn.commit()
-        conn.close()
-        return redirect(url_for('view_students'))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('view_students'))
     else:
         cursor.execute("SELECT * FROM students WHERE id=%s", (id,))
         student = cursor.fetchone()
