@@ -18,69 +18,65 @@ if not os.path.exists("students.db"):
     conn.commit()
     conn.close()
 
-
 app = Flask(__name__)
 
-
-app = Flask(__name__)
-
-@app.route('/')
+@app.route("/")
 def home():
-    return render_template('index.html')
+    return render_template("index.html")
 
 @app.route("/add", methods=["GET", "POST"])
 def add_student():
     if request.method == "POST":
-    name = request.form["name"]
-    age = int(request.form["age"])
-    grade = request.form["grade"]
-        
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO students (name,age,grade)VALUES(?,?,?)",(name,age,grade))
-    conn.commit()
-    conn.close()
-    return redirect(url_for("view_students"))
+        name = request.form["name"]
+        age = int(request.form["age"])
+        grade = request.form["grade"]
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO students (name, age, grade) VALUES (?, ?, ?)", (name, age, grade))
+        conn.commit()
+        conn.close()
+        return redirect(url_for("view_students"))
     return render_template("add.html")
 
-
-@app.route('/view')
+@app.route("/view")
 def view_students():
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM students")
     students = cursor.fetchall()
     conn.close()
-    return render_template('view.html', students=students)
+    return render_template("view.html", students=students)
 
-@app.route('/update/<int:id>', methods=['GET', 'POST'])
+@app.route("/update/<int:id>", methods=["GET", "POST"])
 def update_student(id):
+    if request.method == "POST":
+        name = request.form["name"]
+        age = int(request.form["age"])
+        grade = request.form["grade"]
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE students SET name = ?, age = ?, grade = ? WHERE id = ?", (name, age, grade, id))
+        conn.commit()
+        conn.close()
+        return redirect(url_for("view_students"))
+
     conn = get_connection()
     cursor = conn.cursor()
-    if request.method == 'POST':
-    name = request.form['name']
-    age = request.form['age']
-    grade = request.form['grade']
-    cursor.execute("UPDATE students SET name = ?, age = ?, grade = ? WHERE id = ?", (name, age, grade, id))
-
-    conn.commit()
+    cursor.execute("SELECT * FROM students WHERE id = ?", (id,))
+    student = cursor.fetchone()
     conn.close()
-    return redirect(url_for('view_students'))
-    else:
-        cursor.execute("SELECT * FROM students WHERE id=%s", (id,))
-        student = cursor.fetchone()
-        conn.close()
-        return render_template('update.html', student=student)
+    return render_template("update.html", student=student)
 
-@app.route('/delete/<int:id>')
+@app.route("/delete/<int:id>")
 def delete_student(id):
     conn = get_connection()
     cursor = conn.cursor()
-   cursor.execute("DELETE FROM students WHERE id = ?", (id,))
-
+    cursor.execute("DELETE FROM students WHERE id = ?", (id,))
     conn.commit()
     conn.close()
-    return redirect(url_for('view_students'))
+    return redirect(url_for("view_students"))
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
