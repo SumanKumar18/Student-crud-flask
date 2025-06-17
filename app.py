@@ -30,16 +30,16 @@ def home():
 @app.route("/add", methods=["GET", "POST"])
 def add_student():
     if request.method == "POST":
-        name = request.form["name"]
-        age = int(request.form["age"])
-        grade = request.form["grade"]
+    name = request.form["name"]
+    age = int(request.form["age"])
+    grade = request.form["grade"]
         
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO students (name, age, grade) VALUES (?, ?, ?)", (name, age, grade))
-        conn.commit()
-        conn.close()
-        return redirect(url_for("view_students"))
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO students (name,age,grade)VALUES(?,?,?)",(name,age,grade))
+    conn.commit()
+    conn.close()
+    return redirect(url_for("view_students"))
     return render_template("add.html")
 
 
